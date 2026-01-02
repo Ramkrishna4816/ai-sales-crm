@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from datetime import date
 from database import get_db, engine
 from models import Lead, Base
+from datetime import datetime
 
 Base.metadata.create_all(bind=engine)
 
@@ -43,3 +44,27 @@ def delete_lead(lead_id: int, db: Session = Depends(get_db)):
     db.delete(lead)
     db.commit()
     return {"message": "Lead deleted"}
+
+@router.put("/{lead_id}/status")
+def update_status(lead_id: int, status: str, db: Session = Depends(get_db)):
+    lead = db.query(Lead).filter(Lead.id == lead_id).first()
+    if not lead:
+        raise HTTPException(status_code=404, detail="Lead not found")
+
+    lead.status = status
+    lead.last_contacted = datetime.utcnow()
+    db.commit()
+
+    return {"message": "Lead status updated"}
+
+
+@router.get("/followups/today")
+def todays_followups(db: Session = Depends(get_db)):
+    today = date.today()
+    leads = db.query(Lead).filter(
+        Lead.next_follow_up == today,
+        Lead.status != "closed"
+    ).all()
+    return leads
+
+

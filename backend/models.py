@@ -12,3 +12,5 @@ class Lead(Base):
     status = Column(String, default="new")
     next_follow_up = Column(Date, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+    last_contacted = Column(DateTime, nullable=True)
+    priority = Column(String, default="normal")
