@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes.leads import router as lead_router
+from routes.ai import router as ai_router
+
 
 app = FastAPI(title="AI Sales CRM API")
 
@@ -17,3 +19,5 @@ def root():
     return {"message": "AI Sales CRM API running"}
 
 app.include_router(lead_router, prefix="/leads", tags=["Leads"])
+app.include_router(ai_router, prefix="/ai", tags=["AI"])
+
